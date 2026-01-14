@@ -304,7 +304,7 @@
                 <h2 class="text-center mb-4">Contact Me</h2>
                 <div class="row justify-content-center">
                     <div class="col-md-8">
-                        <form>
+                        <form id="contactForm">
                             <div class="mb-3">
                                 <label class="form-label">Name</label>
                                 <input type="text"
@@ -334,14 +334,16 @@
 
         <!-- Footer -->
         <footer>
-            <p>© 2025 MyPhotoGallery<a href="#">Bootstrap
+            <p>© 2026 MyPhotoGallery · Built with <a href="#">Bootstrap
                     5</a></p>
         </footer>
 
         <!-- JS -->
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script> src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"> </script>
+
         <script>
+  document.addEventListener("DOMContentLoaded", () => {
+
     const input = document.getElementById('photoInput');
     const uploadBtn = document.getElementById('uploadBtn');
     const gallery = document.getElementById('galleryGrid');
@@ -349,26 +351,42 @@
 
     uploadBtn.addEventListener('click', () => {
       const file = input.files[0];
+
       if (!file) {
         alert("Please select an image!");
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const col = document.createElement('div');
-        col.classList.add('col-md-4', 'col-sm-6');
-        col.innerHTML = `
-          <img src="${e.target.result}" class="gallery-img" data-bs-toggle="modal" data-bs-target="#imageModal">
-        `;
-        gallery.appendChild(col);
-
+      if (!file.type.startsWith('image/')) {
+        alert("Only image files are allowed!");
         input.value = '';
+        return;
+      }
 
-        col.querySelector('img').addEventListener('click', () => {
-          modalImg.src = e.target.result;
-        });
+      if (file.size > 2 * 1024 * 1024) {
+        alert("Image must be under 2MB!");
+        input.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const col = document.createElement('div');
+        col.className = 'col-md-4 col-sm-6';
+
+        col.innerHTML = `
+          <img src="${e.target.result}"
+               class="gallery-img"
+               data-bs-toggle="modal"
+               data-bs-target="#imageModal"
+               alt="Uploaded image">
+        `;
+
+        gallery.appendChild(col);
+        input.value = '';
       };
+
       reader.readAsDataURL(file);
     });
 
@@ -377,6 +395,35 @@
         modalImg.src = e.target.src;
       }
     });
-  </script>
+
+  });
+
+
+
+// ✅ CONTACT FORM HANDLING
+const contactForm = document.getElementById('contactForm');
+
+contactForm.addEventListener('submit', function (e) {
+  e.preventDefault(); // page reload stop
+
+  const name = this.querySelector('input[type="text"]').value.trim();
+  const email = this.querySelector('input[type="email"]').value.trim();
+  const message = this.querySelector('textarea').value.trim();
+
+  if (!name || !email || !message) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  alert("✅ Message sent successfully!");
+
+  // Clear form
+  this.reset();
+});
+
+
+
+</script>
+
     </body>
 </html>
